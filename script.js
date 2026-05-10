@@ -401,22 +401,63 @@ const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
     });
   });
 
-  form.addEventListener('submit', e => {
-    e.preventDefault();
-    if (!validate()) return;
+ form.addEventListener('submit', async e => {
+  e.preventDefault();
 
-    // Simulate async send
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending…';
+  if (!validate()) return;
+
+  submitBtn.disabled = true;
+  submitBtn.innerHTML =
+    '<i class="fas fa-spinner fa-spin"></i> Sending…';
+
+  const templateParams = {
+    from_name: fields.name.el.value.trim(),
+    from_email: fields.email.el.value.trim(),
+    subject: fields.subject.el.value.trim(),
+    message: fields.message.el.value.trim(),
+  };
+
+  try {
+    await emailjs.send(
+      "service_b2tuz6u",
+      "template_k8yz1nc",
+      templateParams
+    );
+
+    submitBtn.innerHTML =
+      '<i class="fas fa-paper-plane"></i> <span>Send Message</span>';
+
+    submitBtn.disabled = false;
+
+    form.reset();
+
+    success.innerHTML =
+      '<i class="fas fa-check-circle"></i> Message sent successfully!';
+
+    success.classList.add('show');
 
     setTimeout(() => {
-      submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> <span>Send Message</span>';
-      submitBtn.disabled = false;
-      form.reset();
-      success.classList.add('show');
-      setTimeout(() => success.classList.remove('show'), 5000);
-    }, 1800);
-  });
+      success.classList.remove('show');
+    }, 5000);
+
+  } catch (error) {
+    console.error(error);
+
+    submitBtn.disabled = false;
+
+    submitBtn.innerHTML =
+      '<i class="fas fa-paper-plane"></i> <span>Send Message</span>';
+
+    success.innerHTML =
+      '<i class="fas fa-times-circle"></i> Failed to send message.';
+
+    success.classList.add('show');
+
+    setTimeout(() => {
+      success.classList.remove('show');
+    }, 5000);
+  }
+});
 })();
 
 /* ═══════════════════════════════════════════════════════════════
