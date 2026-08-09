@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeft, ArrowRight, BookOpen, Brain, Hand, Leaf } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookOpen, Brain, ExternalLink, Hand, Leaf } from "lucide-react";
 import { projectFilters, projects, type ProjectCategory } from "@/data/portfolio";
 import { Reveal } from "@/components/reveal";
 import { GitHubIcon } from "@/components/icons";
@@ -26,6 +26,7 @@ export function Projects() {
 
   const active = filtered[index] ?? filtered[0];
   const Icon = active ? icons[active.icon as keyof typeof icons] : Brain;
+  const previewHref = active?.demo ?? active?.github;
 
   const go = (direction: -1 | 1) => {
     if (!filtered.length) return;
@@ -66,7 +67,7 @@ export function Projects() {
 
         <div className="projects-carousel" aria-live="polite">
           <AnimatePresence mode="wait">
-            {active ? (
+            {active && previewHref ? (
               <motion.article
                 key={active.title}
                 className="project-showcase"
@@ -75,18 +76,29 @@ export function Projects() {
                 exit={{ opacity: 0, x: -24 }}
                 transition={{ duration: 0.35 }}
               >
-                <div className="project-visual" style={{ ["--project-accent" as string]: active.accent }}>
+                <a
+                  href={previewHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="project-visual"
+                  style={{ ["--project-accent" as string]: active.accent }}
+                  aria-label={`${active.title} — open ${active.demo ? "live demo" : "GitHub repository"}`}
+                >
                   <Image
                     src={active.image}
                     alt={`${active.title} preview`}
                     fill
                     className="project-image"
                     sizes="(max-width: 768px) 100vw, 50vw"
+                    unoptimized={active.image.endsWith(".gif")}
                   />
-                  <div className="project-visual-icon">
+                  <div className="project-visual-icon" aria-hidden>
                     <Icon className="h-10 w-10" />
                   </div>
-                </div>
+                  <span className="project-visual-hint">
+                    {active.demo ? "Open live demo" : "View on GitHub"}
+                  </span>
+                </a>
                 <div className="project-body">
                   <div className="project-meta">
                     <span>{active.type}</span>
@@ -100,10 +112,16 @@ export function Projects() {
                     ))}
                   </div>
                   <div className="project-links">
-                    <a href={active.href} target="_blank" rel="noopener noreferrer">
+                    <a href={active.github} target="_blank" rel="noopener noreferrer">
                       <GitHubIcon className="h-4 w-4" />
                       View on GitHub
                     </a>
+                    {active.demo ? (
+                      <a href={active.demo} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="h-4 w-4" />
+                        Live Demo
+                      </a>
+                    ) : null}
                   </div>
                 </div>
               </motion.article>

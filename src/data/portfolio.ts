@@ -85,7 +85,21 @@ export const projectFilters: { id: ProjectCategory; label: string }[] = [
   { id: "frontend", label: "Frontend" },
 ];
 
-export const projects = [
+export type Project = {
+  title: string;
+  year: string;
+  type: string;
+  category: Exclude<ProjectCategory, "all">;
+  description: string;
+  stack: string[];
+  github: string;
+  demo?: string;
+  image: string;
+  accent: string;
+  icon: "brain" | "hands" | "leaf" | "book";
+};
+
+export const projects: Project[] = [
   {
     title: "Mental Health Monitoring Website",
     year: "2024",
@@ -94,7 +108,7 @@ export const projects = [
     description:
       "A wellness platform for mood tracking, journaling, and surfacing helpful insights through a clean product experience.",
     stack: ["React", "Node.js", "MongoDB", "Chart.js"],
-    href: "https://github.com/Aashu4you/MediPred01",
+    github: "https://github.com/Aashu4you/MediPred01",
     image: "/projects/mental-health.svg",
     accent: "#0d9488",
     icon: "brain",
@@ -107,7 +121,7 @@ export const projects = [
     description:
       "An AI-assisted app that explores converting spoken language into sign-language-oriented output using NLP and computer vision concepts.",
     stack: ["Python", "TensorFlow", "Flask", "OpenCV"],
-    href: "https://github.com/Aashu4you/SignBridge",
+    github: "https://github.com/Aashu4you/SignBridge",
     image: "/projects/sign-bridge.svg",
     accent: "#2563eb",
     icon: "hands",
@@ -120,7 +134,7 @@ export const projects = [
     description:
       "A farm planning tool that combines weather signals and recommendation logic to help schedule crop cycles.",
     stack: ["React", "FastAPI", "PostgreSQL", "ML"],
-    href: "https://github.com/Aashu4you/Farmify-",
+    github: "https://github.com/Aashu4you/Farmify-",
     image: "/projects/farmify.svg",
     accent: "#16a34a",
     icon: "leaf",
@@ -133,7 +147,7 @@ export const projects = [
     description:
       "An online bookstore UI with discovery flows, cart management, and structured product browsing.",
     stack: ["React", "Redux", "Node.js"],
-    href: "https://github.com/Aashu4you",
+    github: "https://github.com/Aashu4you",
     image: "/projects/book-mart.svg",
     accent: "#c2410c",
     icon: "book",
