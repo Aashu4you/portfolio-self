@@ -1,6 +1,7 @@
 import { Mail, MapPin } from "lucide-react";
 import { About } from "@/components/about";
 import { ContactForm } from "@/components/contact-form";
+import { Footer } from "@/components/footer";
 import { Hero } from "@/components/hero";
 import { Navbar } from "@/components/navbar";
 import { Preloader } from "@/components/preloader";
@@ -33,7 +34,7 @@ export default function HomePage() {
           </Reveal>
 
           <div className="contact-grid">
-            <Reveal className="contact-info">
+            <Reveal className="contact-info panel">
               <h3>Let&apos;s build something great together</h3>
               <p>
                 Have a project in mind or want to discuss opportunities? I&apos;d love to hear from you. I typically
@@ -66,6 +67,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <Footer />
     </main>
   );
 }

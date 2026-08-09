@@ -1,10 +1,12 @@
 "use client";
 
+import Image from "next/image";
 import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeft, ArrowRight, BookOpen, Brain, ExternalLink, Globe, Hand, Leaf } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookOpen, Brain, Hand, Leaf } from "lucide-react";
 import { projectFilters, projects, type ProjectCategory } from "@/data/portfolio";
 import { Reveal } from "@/components/reveal";
+import { GitHubIcon } from "@/components/icons";
 
 const icons = {
   brain: Brain,
@@ -43,11 +45,13 @@ export function Projects() {
         </Reveal>
 
         <Reveal delay={0.1}>
-          <div className="project-filters">
+          <div className="project-filters" role="tablist" aria-label="Project filters">
             {projectFilters.map((item) => (
               <button
                 key={item.id}
                 type="button"
+                role="tab"
+                aria-selected={filter === item.id}
                 className={filter === item.id ? "filter-btn active" : "filter-btn"}
                 onClick={() => {
                   setFilter(item.id);
@@ -60,26 +64,27 @@ export function Projects() {
           </div>
         </Reveal>
 
-        <div className="projects-carousel">
+        <div className="projects-carousel" aria-live="polite">
           <AnimatePresence mode="wait">
             {active ? (
               <motion.article
                 key={active.title}
                 className="project-showcase"
-                initial={{ opacity: 0, x: 40 }}
+                initial={{ opacity: 0, x: 24 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -40 }}
-                transition={{ duration: 0.45 }}
+                exit={{ opacity: 0, x: -24 }}
+                transition={{ duration: 0.35 }}
               >
-                <div className={`project-visual bg-gradient-to-br ${active.gradient}`}>
-                  <Icon className="h-16 w-16 text-white/90" />
-                  <div className="project-overlay">
-                    <p>{active.description}</p>
-                    <div className="overlay-stack">
-                      {active.stack.map((item) => (
-                        <span key={item}>{item}</span>
-                      ))}
-                    </div>
+                <div className="project-visual" style={{ ["--project-accent" as string]: active.accent }}>
+                  <Image
+                    src={active.image}
+                    alt={`${active.title} preview`}
+                    fill
+                    className="project-image"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                  <div className="project-visual-icon">
+                    <Icon className="h-10 w-10" />
                   </div>
                 </div>
                 <div className="project-body">
@@ -95,16 +100,10 @@ export function Projects() {
                     ))}
                   </div>
                   <div className="project-links">
-                    <a href={active.href} target={active.href.startsWith("http") ? "_blank" : undefined} rel="noreferrer">
-                      <Globe className="h-4 w-4" />
-                      Code
+                    <a href={active.href} target="_blank" rel="noopener noreferrer">
+                      <GitHubIcon className="h-4 w-4" />
+                      View on GitHub
                     </a>
-                    {active.href.startsWith("http") ? (
-                      <a href={active.href} target="_blank" rel="noreferrer">
-                        <ExternalLink className="h-4 w-4" />
-                        GitHub
-                      </a>
-                    ) : null}
                   </div>
                 </div>
               </motion.article>
@@ -123,6 +122,7 @@ export function Projects() {
                   className={dotIndex === index ? "carousel-dot active" : "carousel-dot"}
                   onClick={() => setIndex(dotIndex)}
                   aria-label={`Go to ${project.title}`}
+                  aria-current={dotIndex === index ? "true" : undefined}
                 />
               ))}
             </div>

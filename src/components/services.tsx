@@ -1,13 +1,15 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Cog, Laptop, Paintbrush, Smartphone } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
+import { Laptop, Paintbrush, Sparkles } from "lucide-react";
 import { services } from "@/data/portfolio";
 import { Reveal } from "@/components/reveal";
 
-const icons = [Laptop, Paintbrush, Smartphone, Cog];
+const icons = [Laptop, Paintbrush, Sparkles];
 
 export function Services() {
+  const reduceMotion = useReducedMotion();
+
   return (
     <section id="services" className="section">
       <div className="container">
@@ -22,17 +24,17 @@ export function Services() {
 
         <div className="services-grid">
           {services.map((service, index) => {
-            const Icon = icons[index];
+            const Icon = icons[index] ?? Laptop;
             return (
               <motion.div
                 key={service.title}
                 className="service-card"
                 style={{ ["--service-color" as string]: service.color }}
-                initial={{ opacity: 0, y: 28 }}
+                initial={reduceMotion ? false : { opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.08, duration: 0.6 }}
-                whileHover={{ y: -10, rotateX: 4, rotateY: -4 }}
+                transition={{ delay: index * 0.08, duration: 0.5 }}
+                whileHover={reduceMotion ? undefined : { y: -8 }}
               >
                 <div className="service-glow" />
                 <div className="service-icon">

@@ -51,11 +51,21 @@ export function About() {
         <div className="about-grid">
           <Reveal className="about-image-col">
             <div className="about-img-wrapper">
-              <Image src={portfolioData.aboutImage} alt={portfolioData.name} width={560} height={680} className="about-img" />
+              <Image
+                src={portfolioData.aboutImage}
+                alt={portfolioData.name}
+                width={560}
+                height={680}
+                className="about-img"
+                sizes="(max-width: 768px) 90vw, 420px"
+              />
               <div className="about-decoration" />
               <div className="experience-badge">
-                <span className="exp-number">2+</span>
-                <span className="exp-label">Years Exp.</span>
+                <span className="exp-number">
+                  {stats.find((s) => s.label.includes("Years"))?.value ?? 2}
+                  {stats.find((s) => s.label.includes("Years"))?.suffix ?? "+"}
+                </span>
+                <span className="exp-label">Years Building</span>
               </div>
             </div>
           </Reveal>
@@ -72,7 +82,7 @@ export function About() {
                 const Icon = detailIcons[index];
                 return (
                   <div key={detail} className="detail-item">
-                    <Icon className="h-4 w-4 text-accent-alt" />
+                    <Icon className="h-4 w-4 accent" />
                     {detail}
                   </div>
                 );

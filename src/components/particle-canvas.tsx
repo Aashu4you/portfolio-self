@@ -11,8 +11,10 @@ type Particle = {
   a: number;
   reset: (w: number, h: number) => void;
   update: (w: number, h: number) => void;
-  draw: (ctx: CanvasRenderingContext2D) => void;
+  draw: (ctx: CanvasRenderingContext2D, color: string) => void;
 };
+
+const PARTICLE_COLOR = "13,148,136";
 
 function createParticle(w: number, h: number): Particle {
   const particle: Particle = {
@@ -25,10 +27,10 @@ function createParticle(w: number, h: number): Particle {
     reset(width, height) {
       this.x = Math.random() * width;
       this.y = Math.random() * height;
-      this.r = Math.random() * 1.8 + 0.3;
-      this.vx = (Math.random() - 0.5) * 0.4;
-      this.vy = (Math.random() - 0.5) * 0.4;
-      this.a = Math.random() * 0.5 + 0.1;
+      this.r = Math.random() * 1.6 + 0.3;
+      this.vx = (Math.random() - 0.5) * 0.35;
+      this.vy = (Math.random() - 0.5) * 0.35;
+      this.a = Math.random() * 0.4 + 0.08;
     },
     update(width, height) {
       this.x += this.vx;
@@ -37,10 +39,10 @@ function createParticle(w: number, h: number): Particle {
         this.reset(width, height);
       }
     },
-    draw(ctx) {
+    draw(ctx, color) {
       ctx.beginPath();
       ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(162,89,255,${this.a})`;
+      ctx.fillStyle = `rgba(${color},${this.a})`;
       ctx.fill();
     },
   };
@@ -55,21 +57,32 @@ export function ParticleCanvas() {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion) return;
+
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     let width = 0;
     let height = 0;
     let frame = 0;
-    const particles = Array.from({ length: 80 }, () => createParticle(1, 1));
+    let running = true;
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    const count = isMobile ? 28 : 48;
+    const drawConnections = !isMobile;
+    const particles = Array.from({ length: count }, () => createParticle(1, 1));
 
     const resize = () => {
       const parent = canvas.parentElement;
       if (!parent) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
       width = parent.offsetWidth;
       height = parent.offsetHeight;
-      canvas.width = width;
-      canvas.height = height;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
 
     const drawLines = () => {
@@ -78,11 +91,11 @@ export function ParticleCanvas() {
           const dx = particles[i].x - particles[j].x;
           const dy = particles[i].y - particles[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 100) {
+          if (dist < 90) {
             ctx.beginPath();
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(162,89,255,${0.1 * (1 - dist / 100)})`;
+            ctx.strokeStyle = `rgba(${PARTICLE_COLOR},${0.08 * (1 - dist / 90)})`;
             ctx.lineWidth = 0.5;
             ctx.stroke();
           }
@@ -91,22 +104,32 @@ export function ParticleCanvas() {
     };
 
     const animate = () => {
+      if (!running) return;
       ctx.clearRect(0, 0, width, height);
       particles.forEach((particle) => {
         particle.update(width, height);
-        particle.draw(ctx);
+        particle.draw(ctx, PARTICLE_COLOR);
       });
-      drawLines();
+      if (drawConnections) drawLines();
       frame = window.requestAnimationFrame(animate);
+    };
+
+    const onVisibility = () => {
+      running = document.visibilityState === "visible";
+      if (running) animate();
+      else window.cancelAnimationFrame(frame);
     };
 
     resize();
     animate();
     window.addEventListener("resize", resize);
+    document.addEventListener("visibilitychange", onVisibility);
 
     return () => {
+      running = false;
       window.cancelAnimationFrame(frame);
       window.removeEventListener("resize", resize);
+      document.removeEventListener("visibilitychange", onVisibility);
     };
   }, []);
 
