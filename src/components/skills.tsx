@@ -53,24 +53,23 @@ export function Skills() {
           </div>
         </Reveal>
 
-        <Reveal delay={0.1}>
-          <div className="skill-tabs" role="tablist" aria-label="Skill categories">
-            {skillTabs.map((tab) => (
-              <button
-                key={tab.id}
-                type="button"
-                role="tab"
-                id={`skill-tab-${tab.id}`}
-                aria-selected={activeTab === tab.id}
-                aria-controls={`skill-panel-${tab.id}`}
-                className={activeTab === tab.id ? "skill-tab active" : "skill-tab"}
-                onClick={() => setActiveTab(tab.id)}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        </Reveal>
+        <div className="skill-tabs" role="tablist" aria-label="Skill categories">
+          {skillTabs.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              role="tab"
+              id={`skill-tab-${tab.id}`}
+              aria-selected={activeTab === tab.id}
+              aria-controls={`skill-panel-${tab.id}`}
+              tabIndex={activeTab === tab.id ? 0 : -1}
+              className={activeTab === tab.id ? "skill-tab active" : "skill-tab"}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
 
         <motion.div
           key={activeTab}

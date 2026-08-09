@@ -1,11 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { Download, Menu, Moon, Sun, X } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { navLinks, portfolioData } from "@/data/portfolio";
 import { cn } from "@/lib/utils";
 
@@ -16,7 +15,7 @@ export function Navbar() {
   const isLight = resolvedTheme === "light";
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 60);
+    const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -34,25 +33,18 @@ export function Navbar() {
   return (
     <motion.header
       className={cn("navbar", scrolled && "navbar-scrolled")}
-      initial={{ y: -18, opacity: 0 }}
+      initial={{ y: -12, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ delay: 0.05, duration: 0.45 }}
+      transition={{ delay: 0.05, duration: 0.4 }}
     >
-      <Link href="#hero" className="flex items-center gap-3">
-        <Image
-          src={portfolioData.heroImage}
-          alt=""
-          width={40}
-          height={40}
-          className="rounded-full"
-          sizes="40px"
-        />
-        <span className="hidden font-[family-name:var(--font-display)] text-lg font-bold sm:inline">
+      <Link href="#hero" className="navbar-brand">
+        <span className="navbar-brand-mark">AS</span>
+        <span className="hidden sm:inline">
           Aashutosh<span className="text-accent">.</span>
         </span>
       </Link>
 
-      <nav className="hidden items-center gap-8 lg:flex" aria-label="Primary">
+      <nav className="navbar-links" aria-label="Primary">
         {navLinks.map((link) => (
           <a key={link.href} href={link.href} className="nav-link">
             {link.label}
@@ -60,7 +52,7 @@ export function Navbar() {
         ))}
       </nav>
 
-      <div className="flex items-center gap-3">
+      <div className="navbar-actions">
         <button
           type="button"
           aria-label="Toggle theme"
@@ -76,7 +68,7 @@ export function Navbar() {
         </Link>
         <button
           type="button"
-          className="icon-btn lg:hidden"
+          className="icon-btn navbar-menu-btn"
           aria-label="Menu"
           aria-expanded={open}
           aria-controls="mobile-nav"
@@ -90,16 +82,19 @@ export function Navbar() {
         {open ? (
           <motion.div
             id="mobile-nav"
-            className="mobile-nav lg:hidden"
-            initial={{ opacity: 0, y: -12 }}
+            className="mobile-nav"
+            initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
+            exit={{ opacity: 0, y: -10 }}
           >
             {navLinks.map((link) => (
               <a key={link.href} href={link.href} onClick={() => setOpen(false)}>
                 {link.label}
               </a>
             ))}
+            <a href={portfolioData.resumeHref} onClick={() => setOpen(false)}>
+              Download CV
+            </a>
           </motion.div>
         ) : null}
       </AnimatePresence>
